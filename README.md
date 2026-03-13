@@ -1,48 +1,86 @@
-# Bilinear_Interpolation
+# Bilinear Image Scaling Accelerator (RTL Implementation)
 
 # 1. Project Overview
 This project implements a hardware-based bilinear interpolation engine using Verilog RTL to resize digital images. The design scales grayscale or RGB images from a given input resolution to a user-defined output resolution using fixed-point arithmetic, avoiding floating-point operations to ensure hardware efficiency.
+
 The architecture reads pixel data from an input image memory, computes scaled coordinates for each output pixel, and performs bilinear interpolation using the four nearest neighboring pixels. The interpolated pixel values are stored in output memory and written to a hex file after simulation.
+
 The design was verified through behavioral simulation in Vivado, and the output image quality was evaluated using PSNR (Peak Signal-to-Noise Ratio) and SSIM (Structural Similarity Index) by comparing the hardware-generated image with a reference software implementation.
 
 # 2. Motivation
+
 Image scaling is a fundamental operation in:
-1.Image processing pipelines
-2.Video streaming
-3.Computer vision
-4.Embedded vision systems
-5.GPU and display controllers
+
+Image processing pipelines
+
+Video streaming
+
+Computer vision
+
+Embedded vision systems
+
+GPU and display controllers
+
 Most software libraries (OpenCV, MATLAB) perform interpolation using floating-point arithmetic. However, in hardware accelerators, floating-point operations increase resource usage and latency.
+
 This project demonstrates how bilinear interpolation can be implemented efficiently in hardware using fixed-point arithmetic, making it suitable for FPGA or ASIC-based image processing pipelines.
 
 # 3. Bilinear Interpolation Theory
+
 Bilinear interpolation estimates the value of a pixel at a non-integer position by computing a weighted average of the four nearest pixels.
 
 If the input image intensity function is:
-                                        I(x, y)
-and the target coordinate is: $$ (x_in, y_in) $$
+
+I(x, y)
+
+and the target coordinate is:
+
+(x_in, y_in)
+
 the four surrounding pixels are:
-                                I00 = I(x0, y0)
-                                I10 = I(x0 + 1, y0)
-                                I01 = I(x0, y0 + 1)
-                                I11 = I(x0 + 1, y0 + 1)
-where,
-      a = x_in − x0
-      b = y_in − y0
-The bilinear interpolation formula is: 
-                                I_out =(1−a)(1−b)*I00 +a(1−b)*I10 +(1−a)b*I01 +ab*I11
+
+I00 = I(x0, y0)
+I10 = I(x0 + 1, y0)
+I01 = I(x0, y0 + 1)
+I11 = I(x0 + 1, y0 + 1)
+
+where
+
+x0 = floor(x_in)
+y0 = floor(y_in)
+
+Define the fractional distances:
+
+a = x_in − x0
+b = y_in − y0
+
+The bilinear interpolation formula is:
+
+I_out =
+(1−a)(1−b)*I00 +
+a(1−b)*I10 +
+(1−a)b*I01 +
+ab*I11
+
 Each neighboring pixel contributes proportionally based on the distance of the output coordinate from that pixel.
-# 4.Image Coordinate Mapping
+
+# 4. Image Coordinate Mapping
 For image scaling, each output pixel must be mapped back to a corresponding position in the input image.
+
 If:
-                             $$ W_in  = input image width
-                              H_in  = input image height
-                              W_out = output image width
-                              H_out = output image height $$
+
+W_in  = input image width
+H_in  = input image height
+W_out = output image width
+H_out = output image height
+
 Then the mapping is:
-                             x_in = x_out × (W_in / W_out)
-                             y_in = y_out × (H_in / H_out)
+
+x_in = x_out × (W_in / W_out)
+y_in = y_out × (H_in / H_out)
+
 Since hardware cannot directly store floating-point numbers efficiently, this project converts these calculations to fixed-point arithmetic.
+
 # 5. Fixed-Point Arithmetic Implementation
 To avoid floating-point operations, the design uses Q8.8 fixed-point format.
 This means:
