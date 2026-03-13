@@ -35,10 +35,10 @@ Each neighboring pixel contributes proportionally based on the distance of the o
 # 4.Image Coordinate Mapping
 For image scaling, each output pixel must be mapped back to a corresponding position in the input image.
 If:
-                              W_in  = input image width
+                             $$ W_in  = input image width
                               H_in  = input image height
                               W_out = output image width
-                              H_out = output image height
+                              H_out = output image height $$
 Then the mapping is:
                              x_in = x_out × (W_in / W_out)
                              y_in = y_out × (H_in / H_out)
