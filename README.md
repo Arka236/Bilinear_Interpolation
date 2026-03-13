@@ -30,37 +30,29 @@ This project demonstrates how bilinear interpolation can be implemented efficien
 Bilinear interpolation estimates the value of a pixel at a non-integer position by computing a weighted average of the four nearest pixels.
 
 If the input image intensity function is:
-
-I(x, y)
-
+                                        I(x, y)
 and the target coordinate is:
-
-(x_in, y_in)
-
+                                      (x_in, y_in)
 the four surrounding pixels are:
 
-I00 = I(x0, y0)
-I10 = I(x0 + 1, y0)
-I01 = I(x0, y0 + 1)
-I11 = I(x0 + 1, y0 + 1)
+                                      I00 = I(x0, y0)
+                                      I10 = I(x0 + 1, y0)
+                                      I01 = I(x0, y0 + 1)
+                                      I11 = I(x0 + 1, y0 + 1)
 
 where
 
-x0 = floor(x_in)
-y0 = floor(y_in)
+                                      x0 = floor(x_in)
+                                      y0 = floor(y_in)
 
 Define the fractional distances:
 
-a = x_in − x0
-b = y_in − y0
+                                      a = x_in − x0
+                                      b = y_in − y0
 
 The bilinear interpolation formula is:
 
-I_out =
-(1−a)(1−b)*I00 +
-a(1−b)*I10 +
-(1−a)b*I01 +
-ab*I11
+I_out =(1−a)(1−b)*I00 +a(1−b)*I10 +(1−a)b*I01 +ab*I11
 
 Each neighboring pixel contributes proportionally based on the distance of the output coordinate from that pixel.
 
@@ -69,15 +61,15 @@ For image scaling, each output pixel must be mapped back to a corresponding posi
 
 If:
 
-W_in  = input image width
-H_in  = input image height
-W_out = output image width
-H_out = output image height
+                            W_in  = input image width
+                            H_in  = input image height
+                            W_out = output image width
+                            H_out = output image height
 
 Then the mapping is:
 
-x_in = x_out × (W_in / W_out)
-y_in = y_out × (H_in / H_out)
+                            x_in = x_out × (W_in / W_out)
+                            y_in = y_out × (H_in / H_out)
 
 Since hardware cannot directly store floating-point numbers efficiently, this project converts these calculations to fixed-point arithmetic.
 
@@ -110,7 +102,7 @@ This technique preserves fractional precision while using only integer operation
 
 The design consists of the following logical components:
 
-# 1. Input Image Memory
+# 6.1. Input Image Memory
 Stores the original image pixels.
                               reg [7:0] img_in [0:W_IN*H_IN-1];
 
@@ -119,36 +111,36 @@ Pixels are stored in row-major order.
 Address calculation:
                               address = y × width + x
 
-# 2. Output Image Memory
+# 6.2. Output Image Memory
 Stores interpolated output pixels.
 
                               reg [7:0] img_out [0:W_OUT*H_OUT-1];
                               
-# 3. Coordinate Mapping Unit
+# 6.3. Coordinate Mapping Unit
 Computes the input image coordinate corresponding to each output pixel.
 
                               x_in_fp = x_out * W_IN * 256 / W_OUT
                               y_in_fp = y_out * H_IN * 256 / H_OUT
-# 4. Neighbor Pixel Fetch Unit
+# 6.4. Neighbor Pixel Fetch Unit
 Retrieves the four surrounding pixels:
 
                               I00 = img_in[y0*W_IN + x0]
                               I10 = img_in[y0*W_IN + (x0+1)]
                               I01 = img_in[(y0+1)*W_IN + x0]
                               I11 = img_in[(y0+1)*W_IN + (x0+1)]
-# 5. Weight Computation Unit
+# 6.5. Weight Computation Unit
 Weights are derived from fractional distances:
 
                                 wa = 255 − a
                                 wb = 255 − b
-# 6. Bilinear Computation Unit
+# 6.6. Bilinear Computation Unit
 The interpolated value is computed as:
                             _sum = wa*wb*I00 +a*wb*I10 +wa*b*I01 +a*b*I11_
 Since the weights are scaled by 256, the result must be scaled back:
                                                             pixel = sum >> 16
 
 
-# 7. Output Write Unit
+# 6.7. Output Write Unit
 
 The final interpolated pixel is stored in output memory:
 
