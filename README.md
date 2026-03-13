@@ -11,15 +11,15 @@ The design was verified through behavioral simulation in Vivado, and the output 
 
 Image scaling is a fundamental operation in:
 
-Image processing pipelines
-
-Video streaming
-
-Computer vision
-
-Embedded vision systems
-
-GPU and display controllers
+                                          Image processing pipelines
+                                          
+                                          Video streaming
+                                          
+                                          Computer vision
+                                          
+                                          Embedded vision systems
+                                          
+                                          GPU and display controllers
 
 Most software libraries (OpenCV, MATLAB) perform interpolation using floating-point arithmetic. However, in hardware accelerators, floating-point operations increase resource usage and latency.
 
