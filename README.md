@@ -51,8 +51,8 @@ Define the fractional distances:
                                       b = y_in − y0
 
 The bilinear interpolation formula is:
-
-I_out =(1−a)(1−b)*I00 +a(1−b)*I10 +(1−a)b*I01 +ab*I11
+                            
+                            I_out =(1−a)(1−b)*I00 +a(1−b)*I10 +(1−a)b*I01 +ab*I11
 
 Each neighboring pixel contributes proportionally based on the distance of the output coordinate from that pixel.
 
